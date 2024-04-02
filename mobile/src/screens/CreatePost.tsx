@@ -11,12 +11,15 @@ import {SafeAreaView} from 'react-native';
 import {usePostPostsMutation} from 'generated/post';
 import {usePostUsersMutation} from 'generated/user';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import {RootState} from 'store';
 
 const CreatePost = () => {
   const [createPost, {isLoading}] = usePostPostsMutation();
   const navigation = useNavigation();
   const [, {}] = usePostUsersMutation();
   const [text, setText] = useState('');
+  const account = useSelector((state: RootState) => state.auth.account);
 
   const onSubmitPost = async () => {
     try {
@@ -32,7 +35,7 @@ const CreatePost = () => {
           <Flex alignItems="center" flexDirection="row">
             <Avatar />
             <Text ml="2" fontWeight="bold">
-              ALLEJI LEWIS
+              {account.username}
             </Text>
           </Flex>
         </Flex>

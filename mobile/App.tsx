@@ -5,7 +5,6 @@
  * @format
  */
 
-import dayjs from 'dayjs';
 import {NativeBaseProvider, theme} from 'native-base';
 import MainNavigator from 'navigation/MainNavigation';
 import React from 'react';
