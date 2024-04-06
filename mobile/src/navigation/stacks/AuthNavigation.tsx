@@ -9,7 +9,11 @@ const Stack = createStackNavigator();
 export const AuthNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultStackNavOptions}>
-      <Stack.Screen name={Screens.login} component={LoginScreen} />
+      <Stack.Screen
+        options={{headerShown: false}}
+        name={Screens.login}
+        component={LoginScreen}
+      />
     </Stack.Navigator>
   );
 };
