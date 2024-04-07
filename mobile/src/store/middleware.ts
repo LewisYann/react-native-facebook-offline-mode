@@ -9,6 +9,7 @@ export const offlineActionListenerMiddleware =
     const {meta} = action;
     const id = meta?.arg?.endpointName;
     const isConnected = await getNetworkStatus();
+    console.log(isConnected);
     const isAllowedEndpoint = offlineConfig.allowedEnpoints.filter(item =>
       item.includes(action.type),
     );
