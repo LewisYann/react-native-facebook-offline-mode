@@ -1,40 +1,44 @@
 import {useToast} from 'native-base';
 import {useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import NetInfo from '@react-native-community/netinfo';
+import {useSelector} from 'react-redux';
+import NetInfo, {useNetInfo} from '@react-native-community/netinfo';
+
 import {offlineConfig} from 'configs/offline';
-import offlineSlice from 'store/slices/offline';
 import {RootState} from 'store';
+import {BACKEND_URL} from 'constants/all';
+
+NetInfo.configure({
+  reachabilityUrl: BACKEND_URL,
+  reachabilityTest: async response => response.status === 404,
+  reachabilityLongTimeout: 5 * 1000, // 5s
+  reachabilityShortTimeout: 1 * 1000, // 1s
+  reachabilityRequestTimeout: 15 * 1000, // 15s
+  reachabilityShouldRun: () => true,
+  shouldFetchWiFiSSID: true,
+  useNativeReachability: false,
+});
 
 export const useNetworkStatus = (notifyOnConnectionState: boolean = true) => {
-  const isConnected = useSelector(
-    (state: RootState) => state.offlineMode?.isConnected,
-  );
-  const dispatch = useDispatch();
+  const netInfo = useNetInfo();
+
   const toast = useToast();
   const id = 'test-toast';
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      if (notifyOnConnectionState) {
-        const toastMessage = state.isConnected
-          ? offlineConfig.connectedToast
-          : offlineConfig.disconnectedToast;
-        if (!toast.isActive(id)) {
-          toast.show(toastMessage);
-        }
+    if (notifyOnConnectionState) {
+      const toastMessage = netInfo.isInternetReachable
+        ? offlineConfig.connectedToast
+        : offlineConfig.disconnectedToast;
+      if (!toast.isActive(id)) {
+        toast.show(toastMessage);
       }
-      dispatch(
-        offlineSlice.actions.setConnectionState({
-          isConnected: state.isConnected,
-        }),
-      );
-    });
+    }
+  }, [netInfo.isInternetReachable]);
 
-    return () => {
-      unsubscribe();
-    };
-  }, [isConnected]);
+  return netInfo.isInternetReachable;
+};
 
-  return isConnected;
+export const getNetworkStatus = async () => {
+  const status = await NetInfo.fetch();
+  return status.isInternetReachable;
 };

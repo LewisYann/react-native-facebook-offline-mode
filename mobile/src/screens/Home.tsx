@@ -11,14 +11,16 @@ import CreatePostCard from 'uikit/Post/CreatePostCard';
 import {useOfflineActionQueue} from 'hooks/useQueuingAction';
 import {offlinePostAdapter} from 'utils/adapters/offlinePostAdapter';
 import {computePostWithOfflineData, getErrorMessage} from 'utils/helpers';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from 'store';
+import offlineSlice from 'store/slices/offline';
 
 const HomeScreen = () => {
   // Retrieve data, refetch function, and loading state from the useGetPostsQuery hook
   const {data, refetch, isFetching} = useGetPostsQuery({
     sort: 'createdAt:desc', // Specify sorting order
   });
+  const disptach = useDispatch();
 
   const account = useSelector((state: RootState) => state.auth.account);
 
@@ -27,7 +29,6 @@ const HomeScreen = () => {
 
   // Retrieve offlineActions and offlinePostAdapter from the useOfflineActionQueue hook
   const {actions: offlineActions} = useOfflineActionQueue<PostPostsApiArg>();
-
   // Retrieve toast notification function from useToast hook
   const toast = useToast();
 
@@ -35,26 +36,34 @@ const HomeScreen = () => {
   const actions = offlineActions?.map(item => ({
     ...offlinePostAdapter(item.payload.postRequest),
     isOffline: true,
+    actionId: item.actionId,
   }));
 
   // Combine offline actions with online post data
   const postData = computePostWithOfflineData(actions, data);
 
   // Function to handle post deletion
-  const handleDeletePost = async (id: number) => {
-    try {
-      // Call deletePost mutation to delete the post by its ID
-      await deletePost({id}).unwrap();
-      // Show success toast notification
-      toast.show({title: 'Publication supprimée'});
-    } catch (error) {
-      // Show error toast notification with error message
-      toast.show({
-        title: 'Erreur',
-        description: getErrorMessage(error),
-      });
+  const handleDeletePost = async (id: number | string, isOffline = false) => {
+    if (isOffline) {
+      disptach(
+        offlineSlice.actions.deleteActionFromQueue({actionId: id as string}),
+      );
+    } else {
+      try {
+        // Call deletePost mutation to delete the post by its ID
+        await deletePost({id: id as number}).unwrap();
+        // Show success toast notification
+        toast.show({title: 'Publication supprimée'});
+      } catch (error) {
+        // Show error toast notification with error message
+        toast.show({
+          title: 'Erreur',
+          description: getErrorMessage(error),
+        });
+      }
     }
   };
+
   const fullName = account?.username;
 
   return (
@@ -74,7 +83,12 @@ const HomeScreen = () => {
               <PostItem
                 isOfflineData={item.item?.isOffline}
                 post={item.item.attributes}
-                onDelete={() => handleDeletePost(item.item.id)}
+                onDelete={() => {
+                  const id = item.item?.isOffline
+                    ? item.item.actionId
+                    : item.item.id;
+                  handleDeletePost(id, item.item?.isOffline);
+                }}
                 fullName={fullName}
               />
             </View>

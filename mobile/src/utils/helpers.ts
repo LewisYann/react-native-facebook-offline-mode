@@ -21,9 +21,11 @@ export const getErrorMessage = (error: FetchBaseQueryError): string => {
  * @returns Combined post data with offline status
  */
 export function computePostWithOfflineData(
-  offline: Array<PostListResponseDataItem & {isOffline: boolean}>,
+  offline: Array<
+    PostListResponseDataItem & {isOffline: boolean; actionId: string}
+  >,
   postData: PostListResponse,
-): Array<PostListResponseDataItem & {isOffline?: boolean}> {
+): Array<PostListResponseDataItem & {isOffline?: boolean; actionId?: string}> {
   // If no offline data provided, return only online posts data
   if (!offline?.length) {
     return postData?.data ?? [];

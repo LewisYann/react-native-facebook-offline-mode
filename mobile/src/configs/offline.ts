@@ -7,6 +7,7 @@ type OfflineConfigType = {
   warningToast: IToastProps;
   allowRequestType: RequestType[];
   actionKeywordFilter: string;
+  allowedEnpoints: string[];
 };
 export const offlineConfig: OfflineConfigType = {
   connectedToast: {
@@ -26,5 +27,6 @@ export const offlineConfig: OfflineConfigType = {
     title: 'Disconnection',
   },
   allowRequestType: ['mutation'],
+  allowedEnpoints: ['post'],
   actionKeywordFilter: 'execute',
 };

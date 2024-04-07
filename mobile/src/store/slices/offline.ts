@@ -10,12 +10,10 @@ export type ActionType<T = unknown> = {
 
 export type State = {
   queueAction: Record<string, ActionType>;
-  isConnected: boolean;
 };
 
 const initialState: State = {
   queueAction: {},
-  isConnected: false,
 };
 
 const offlineSlice = createSlice({
@@ -32,13 +30,8 @@ const offlineSlice = createSlice({
       state: State,
       action: PayloadAction<{actionId: string}>,
     ) {
+      console.log('action', action.payload.actionId);
       state.queueAction[action.payload.actionId].hasTrigger = true;
-    },
-    setConnectionState(
-      state: State,
-      action: PayloadAction<{isConnected: boolean}>,
-    ) {
-      state.isConnected = action.payload.isConnected;
     },
   },
 });

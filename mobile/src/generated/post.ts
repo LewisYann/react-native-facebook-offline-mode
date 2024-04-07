@@ -1,3 +1,4 @@
+import {Toast} from 'native-base';
 import {baseApi as api} from '../utils/baseApi';
 
 const injectedRtkApi = api.injectEndpoints({
@@ -23,6 +24,16 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.postRequest,
       }),
       invalidatesTags: ['CreatePostTags'],
+      async onQueryStarted(id, {queryFulfilled}) {
+        try {
+          const {data} = await queryFulfilled;
+          if (data.data) {
+            Toast.show({title: 'Posted', description: 'Publication posté'});
+          }
+        } catch (err) {
+          throw err;
+        }
+      },
     }),
     getPostsById: build.query<GetPostsByIdApiResponse, GetPostsByIdApiArg>({
       query: queryArg => ({url: `/posts/${queryArg.id}`}),
