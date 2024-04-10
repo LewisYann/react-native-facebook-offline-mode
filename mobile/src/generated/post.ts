@@ -28,7 +28,10 @@ const injectedRtkApi = api.injectEndpoints({
         try {
           const {data} = await queryFulfilled;
           if (data.data) {
-            Toast.show({title: 'Posted', description: 'Publication posté'});
+            Toast.show({
+              title: 'Posted',
+              description: 'Your publication has posted',
+            });
           }
         } catch (err) {
           throw err;

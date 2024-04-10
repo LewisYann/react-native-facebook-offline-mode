@@ -32,7 +32,6 @@ const LoginScreen = () => {
         body: formData,
       }).unwrap();
       if (data) {
-        console.log(data);
         dispatch(authSlice.actions.setAccount({account: data.user}));
         dispatch(
           authSlice.actions.setAuthTokens({

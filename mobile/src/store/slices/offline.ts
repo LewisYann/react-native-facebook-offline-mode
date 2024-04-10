@@ -30,7 +30,6 @@ const offlineSlice = createSlice({
       state: State,
       action: PayloadAction<{actionId: string}>,
     ) {
-      console.log('action', action.payload.actionId);
       state.queueAction[action.payload.actionId].hasTrigger = true;
     },
   },
