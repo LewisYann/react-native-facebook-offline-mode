@@ -63,7 +63,6 @@ react-native-app-starter-temple/
 ├── src/
 │   ├── components/        # Reusable components
 │   ├── screens/           # App screens
-│   ├── services/          # API services
 │   ├── store/             # Redux store configuration
 │   ├── theme/             # Native Base theme configuration
 │   └── navigation         # App navigations
